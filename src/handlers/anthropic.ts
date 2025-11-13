@@ -334,6 +334,16 @@ const toFinishReasonStreaming = (
   }
 }
 
+/**
+ * Sanitizes a tool_call_id to match Anthropic's required pattern: ^[a-zA-Z0-9_-]+$
+ * This ensures compatibility when converting from OpenAI format to Anthropic format,
+ * especially when using vision and tool calls together.
+ */
+export const sanitizeToolCallId = (toolCallId: string): string => {
+  // Replace any character that's not alphanumeric, underscore, or hyphen with an underscore
+  return toolCallId.replace(/[^a-zA-Z0-9_-]/g, '_')
+}
+
 export const getDefaultMaxTokens = (model: string): number => {
   if (
     model === 'claude-3-5-sonnet-20240620' ||
@@ -417,7 +427,7 @@ export const convertMessages = async (
 
     if (message.role === 'tool') {
       const toolResult: ToolResultBlockParam = {
-        tool_use_id: message.tool_call_id,
+        tool_use_id: sanitizeToolCallId(message.tool_call_id),
         content: message.content,
         type: 'tool_result',
       }
@@ -441,7 +451,7 @@ export const convertMessages = async (
             }
 
             return {
-              id: toolCall.id,
+              id: sanitizeToolCallId(toolCall.id),
               input: args,
               name: toolCall.function.name,
               type: 'tool_use',

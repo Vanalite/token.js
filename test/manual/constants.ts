@@ -9,19 +9,21 @@ import { models } from '../../src/models'
 export const SELECTED_TEST_MODELS: {
   [K in keyof typeof models]: string[]
 } = {
-  openai: ['gpt-4o'],
+  openai: ['gpt-5'],
   ai21: ['jamba-instruct'],
-  anthropic: ['claude-3-5-sonnet-20240620'],
-  gemini: ['gemini-1.5-pro'],
-  cohere: ['command-r-plus'],
+  anthropic: ['claude-sonnet-4-5'],
+  gemini: ['gemini-2.5-pro'],
+  cohere: ['command-a-03-2025'],
   bedrock: [
     'amazon.titan-text-express-v1',
-    'anthropic.claude-3-sonnet-20240229-v1:0',
+    'anthropic.claude-3-5-sonnet-20241022-v2:0',
     'cohere.command-r-plus-v1:0',
     'meta.llama3-8b-instruct-v1:0',
-    'mistral.mistral-7b-instruct-v0:2',
+    'mistral.mistral-large-2402-v1:0',
   ],
-  mistral: ['open-mistral-7b'],
-  groq: ['llama3-70b-8192', 'mixtral-8x7b-32768', 'gemma2-9b-it'],
-  perplexity: ['llama-3-sonar-small-32k-chat', 'mixtral-8x7b-instruct'],
+  mistral: ['mistral-large-2411'],
+  groq: ['llama-3.3-70b-versatile'],
+  perplexity: ['sonar-pro'],
+  openrouter: [],
+  'openai-compatible': [],
 }

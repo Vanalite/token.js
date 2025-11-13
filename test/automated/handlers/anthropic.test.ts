@@ -4,6 +4,7 @@ import { CompletionParams } from '../../../src/chat'
 import {
   convertMessages,
   convertToolParams,
+  sanitizeToolCallId,
 } from '../../../src/handlers/anthropic'
 import { getDummyTool } from '../../dummy'
 import { MESSAGES_WITH_ASSISTANT_TOOL_CALLS_AND_TOOL_RESULTS } from './messages'
@@ -164,6 +165,50 @@ describe('convertMessages', () => {
         role: 'user',
       },
     ])
+  })
+
+  it(`sanitizes tool_call_id with invalid characters when using vision and tool calls together`, async () => {
+    const input: CompletionParams['messages'] = [
+      { role: 'user', content: 'What is in this image?' },
+      {
+        role: 'assistant',
+        content: 'I see a cat.',
+        tool_calls: [
+          {
+            id: 'call_abc@123#xyz',
+            type: 'function',
+            function: {
+              name: 'get_image_info',
+              arguments: '{"detail":"cat"}',
+            },
+          },
+        ],
+      },
+      {
+        role: 'tool',
+        tool_call_id: 'call_abc@123#xyz',
+        content: '{"success":true}',
+      },
+    ]
+
+    const { messages } = await convertMessages(input)
+
+    // Verify that the tool_use_id has been sanitized
+    expect(messages[1].content[1]).toHaveProperty('id', 'call_abc_123_xyz')
+    expect(messages[2].content[0]).toHaveProperty(
+      'tool_use_id',
+      'call_abc_123_xyz'
+    )
+  })
+})
+
+describe('sanitizeToolCallId', () => {
+  it('removes invalid characters from tool_call_id', () => {
+    expect(sanitizeToolCallId('call_abc@123#xyz')).toBe('call_abc_123_xyz')
+    expect(sanitizeToolCallId('tool-call-id-1')).toBe('tool-call-id-1')
+    expect(sanitizeToolCallId('valid_id_123')).toBe('valid_id_123')
+    expect(sanitizeToolCallId('id!@#$%^&*()')).toBe('id__________')
+    expect(sanitizeToolCallId('call:123/456')).toBe('call_123_456')
   })
 })
 

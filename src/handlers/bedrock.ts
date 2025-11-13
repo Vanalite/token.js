@@ -54,21 +54,11 @@ const normalizeMIMEType = (mimeType: MIMEType): ImageFormat => {
 }
 
 const supportsSystemMessages = (model: BedrockModel): boolean => {
-  return (
-    model !== 'cohere.command-light-text-v14' &&
-    model !== 'cohere.command-text-v14' &&
-    model !== 'amazon.titan-text-express-v1' &&
-    model !== 'amazon.titan-text-lite-v1' &&
-    model !== 'mistral.mistral-7b-instruct-v0:2' &&
-    model !== 'mistral.mixtral-8x7b-instruct-v0:1'
-  )
+  return model !== 'amazon.titan-text-express-v1'
 }
 
 const supportsAssistantMessages = (model: BedrockModel): boolean => {
-  return (
-    model !== 'cohere.command-light-text-v14' &&
-    model !== 'cohere.command-text-v14'
-  )
+  return true // All current bedrock models support assistant messages
 }
 
 const isTextMember = (
